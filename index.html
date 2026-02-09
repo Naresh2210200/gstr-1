@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSTR1 CSV Processor - Complete</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .main-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step {
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            box-shadow: var(--shadow);
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .upload-zone {
+            border: 3px dashed var(--border);
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: var(--bg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .upload-zone:hover::before {
+            left: 100%;
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .file-item {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .file-remove:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .status {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            color: var(--success);
+            display: block;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            display: block;
+        }
+
+        .status.info {
+            background: rgba(37, 99, 235, 0.1);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .file-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 GSTR1 CSV Processor</h1>
+            <p>Professional GST return processing with strict compliance</p>
+        </div>
+
+        <div class="main-card">
+            <!-- Step 1: Upload Template -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Upload Excel Template</div>
+                </div>
+                <div class="upload-zone" id="templateZone" onclick="document.getElementById('templateInput').click()">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">Click or drag your Excel template here</div>
+                    <div class="upload-hint">Supported: .xlsx files</div>
+                </div>
+                <input type="file" id="templateInput" accept=".xlsx" />
+                <div class="file-list" id="templateList"></div>
+            </div>
+
+            <!-- Step 2: Upload CSVs -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Upload CSV Files</div>
+                </div>
+                <div class="upload-zone" id="csvZone" onclick="document.getElementById('csvInput').click()">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click or drag your CSV files here</div>
+                    <div class="upload-hint">You can select multiple files at once</div>
+                </div>
+                <input type="file" id="csvInput" accept=".csv" multiple />
+                <div class="file-list" id="csvList"></div>
+            </div>
+
+            <!-- Step 3: Merge -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Process & Merge</div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn" id="mergeBtn" disabled onclick="mergeFiles()">
+                        🚀 Process & Download
+                    </button>
+                </div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status" id="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let templateFile = null;
+        let csvFiles = {};
+
+        // RULE 4: File & Sheet Name Normalization
+        function normalizeSheetName(name) {
+            const upper = name.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            
+            if (upper.includes('HSN') && upper.includes('B2B')) return 'hsn_b2b';
+            if (upper.includes('HSN') && upper.includes('B2C')) return 'hsn_b2c';
+            if (upper.includes('B2B')) return 'b2b';
+            if (upper.includes('B2CL')) return 'b2cl';
+            if (upper.includes('B2CS')) return 'b2cs';
+            if (upper.includes('EXP')) return 'export';
+            if (upper.includes('EXEMP') || upper.includes('NIL')) return 'Nil_exempt_NonGST';
+            if (upper.includes('CDNR')) return 'cdnr';
+            if (upper.includes('CDNUR')) return 'cdnur';
+            if (upper.includes('AT') && upper.includes('ADJ')) return 'adv_tax_adjusted';
+            if (upper.includes('AT')) return 'adv_tax';
+            if (upper.includes('DOC')) return 'Docs_issued';
+            
+            return name;
+        }
+
+        // RULE 3: B2B Sheet Data Cleaning
+        function cleanPlaceOfSupply(value) {
+            if (!value) return '';
+            const str = value.toString().trim();
+            // Remove state code and hyphen (e.g., "29-Karnataka" → "Karnataka")
+            return str.replace(/^\d+-\s*/, '').trim();
+        }
+
+        function trimAllFields(obj) {
+            const cleaned = {};
+            for (const [key, value] of Object.entries(obj)) {
+                if (typeof value === 'string') {
+                    cleaned[key] = value.trim();
+                } else {
+                    cleaned[key] = value;
+                }
+            }
+            return cleaned;
+        }
+
+        // RULE 1: Documents/Doc Issue Processing
+        function processDocsIssued(data) {
+            return data.map(row => {
+                const cleaned = trimAllFields(row);
+                
+                // Map column names
+                const processed = {
+                    'Nature of Document': cleaned['Nature of Document'] || cleaned['Type of Document'] || '',
+                    'Sr.No.From': cleaned['Sr.No.From'] || cleaned['Series From'] || '',
+                    'Sr.No.To': cleaned['Sr.No.To'] || cleaned['Series To'] || '',
+                    'Total Number': parseFloat(cleaned['Total Number']) || 0,
+                    'Cancelled': parseFloat(cleaned['Cancelled']) || 0
+                };
+                
+                // Calculate Net Issued
+                processed['Net Issued'] = processed['Total Number'] - processed['Cancelled'];
+                
+                return processed;
+            });
+        }
+
+        // RULE 2: HSN Type Handling
+        function processHSNData(data, fileName) {
+            const isB2B = fileName.toUpperCase().includes('B2B');
+            const isB2C = fileName.toUpperCase().includes('B2C');
+            
+            return data.map(row => {
+                const cleaned = trimAllFields(row);
+                
+                // Set Type based on file name
+                if (isB2B) {
+                    cleaned['Type'] = 'B2B';
+                } else if (isB2C) {
+                    cleaned['Type'] = 'B2C';
+                }
+                
+                return cleaned;
+            });
+        }
+
+        // Column mapping from CSV to Template
+        const columnMappings = {
+            'b2b': {
+                'GSTIN/UIN of Recipient': 'GSTIN/UIN',
+                'Invoice Number': 'Invoice No',
+                'Invoice date': 'Date of Invoice',
+                'Invoice Value': 'Invoice Value',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value',
+                'Cess Amount': 'CESS',
+                'Place Of Supply': 'Place Of Supply',
+                'Reverse Charge': 'RCM Applicable',
+                'Invoice Type': 'Invoice Type',
+                'E-Commerce GSTIN': 'E-Commerce GSTIN'
+            },
+            'b2cl': {
+                'Invoice Number': 'Invoice No',
+                'Invoice date': 'Date of Invoice',
+                'Invoice Value': 'Invoice Value',
+                'Place Of Supply': 'Place Of Supply',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value',
+                'Cess Amount': 'CESS',
+                'E-Commerce GSTIN': 'E-Commerce GSTIN'
+            },
+            'b2cs': {
+                'Type': 'Type',
+                'Place Of Supply': 'Place Of Supply',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value',
+                'Cess Amount': 'CESS',
+                'E-Commerce GSTIN': 'E-Commerce GSTIN'
+            },
+            'export': {
+                'Export Type': 'Export Type',
+                'Invoice Number': 'Invoice No',
+                'Invoice date': 'Date of Invoice',
+                'Invoice Value': 'Invoice Value',
+                'Port Code': 'Port Code',
+                'Shipping Bill Number': 'Shipping Bill No',
+                'Shipping Bill Date': 'Shipping Bill Date',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value'
+            },
+            'Nil_exempt_NonGST': {
+                'Description': 'Description',
+                'Nil Rated Supplies': 'Nil Rated Supplies',
+                'Exempted (other than nil rated/non GST supply)': 'Exempted',
+                'Non-GST supplies': 'Non-GST Supplies'
+            },
+            'cdnr': {
+                'GSTIN/UIN of Recipient': 'GSTIN/UIN',
+                'Note Number': 'Note No',
+                'Note date': 'Note Date',
+                'Note Type': 'Note Type',
+                'Place Of Supply': 'Place Of Supply',
+                'Reverse Charge': 'RCM Applicable',
+                'Note Supply Type': 'Note Supply Type',
+                'Note Value': 'Note Value',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value',
+                'Cess Amount': 'CESS'
+            },
+            'cdnur': {
+                'UR Type': 'UR Type',
+                'Note Number': 'Note No',
+                'Note date': 'Note Date',
+                'Note Type': 'Note Type',
+                'Place Of Supply': 'Place Of Supply',
+                'Note Value': 'Note Value',
+                'Rate': 'GST%',
+                'Taxable Value': 'Taxable Value',
+                'Cess Amount': 'CESS'
+            },
+            'adv_tax': {
+                'Place Of Supply': 'Place Of Supply',
+                'Rate': 'GST%',
+                'Gross Advance Received': 'Gross Advance Received',
+                'Cess Amount': 'CESS'
+            },
+            'adv_tax_adjusted': {
+                'Place Of Supply': 'Place Of Supply',
+                'Rate': 'GST%',
+                'Gross Advance Adjusted': 'Gross Advance Adjusted',
+                'Cess Amount': 'CESS'
+            },
+            'Docs_issued': {
+                'Nature of Document': 'Nature of Document',
+                'Type of Document': 'Nature of Document',
+                'Sr.No.From': 'Sr.No.From',
+                'Series From': 'Sr.No.From',
+                'Sr.No.To': 'Sr.No.To',
+                'Series To': 'Sr.No.To',
+                'Total Number': 'Total Number',
+                'Cancelled': 'Cancelled',
+                'Net Issued': 'Net Issued'
+            },
+            'hsn': {
+                'HSN': 'HSN',
+                'Description': 'Description',
+                'UQC': 'UQC',
+                'Total Quantity': 'Total Quantity',
+                'Total Value': 'Total Value',
+                'Taxable Value': 'Taxable Value',
+                'Integrated Tax Amount': 'IGST',
+                'Central Tax Amount': 'CGST',
+                'State/UT Tax Amount': 'SGST',
+                'Cess Amount': 'CESS',
+                'Rate': 'GST%',
+                'Type': 'Type'
+            }
+        };
+
+        const csvToSheetMapping = {
+            'B2B.CSV': 'b2b',
+            'B2CL.CSV': 'b2cl',
+            'B2CS.CSV': 'b2cs',
+            'EXP.CSV': 'export',
+            'EXEMP.CSV': 'Nil_exempt_NonGST',
+            'CDNR.CSV': 'cdnr',
+            'CDNUR.CSV': 'cdnur',
+            'AT.CSV': 'adv_tax',
+            'ATADJ.CSV': 'adv_tax_adjusted',
+            'DOCS.CSV': 'Docs_issued',
+            'HSNB2B.CSV': 'hsn',
+            'HSNB2C.CSV': 'hsn'
+        };
+
+        // Drag and drop handlers
+        function setupDragDrop(zoneId, inputId) {
+            const zone = document.getElementById(zoneId);
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                zone.addEventListener(eventName, () => zone.classList.add('dragover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                zone.addEventListener(eventName, () => zone.classList.remove('dragover'), false);
+            });
+
+            zone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                document.getElementById(inputId).files = files;
+                handleFileSelect(inputId);
+            }, false);
+        }
+
+        setupDragDrop('templateZone', 'templateInput');
+        setupDragDrop('csvZone', 'csvInput');
+
+        document.getElementById('templateInput').addEventListener('change', () => handleFileSelect('templateInput'));
+        document.getElementById('csvInput').addEventListener('change', () => handleFileSelect('csvInput'));
+
+        function handleFileSelect(inputId) {
+            const input = document.getElementById(inputId);
+            const files = Array.from(input.files);
+
+            if (inputId === 'templateInput') {
+                if (files.length > 0) {
+                    templateFile = files[0];
+                    displayTemplateFile();
+                }
+            } else {
+                files.forEach(file => {
+                    const fileName = file.name.toUpperCase();
+                    csvFiles[fileName] = file;
+                });
+                displayCsvFiles();
+            }
+
+            updateMergeButton();
+        }
+
+        function displayTemplateFile() {
+            const list = document.getElementById('templateList');
+            if (!templateFile) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = `
+                <div class="file-item">
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name">${templateFile.name}</div>
+                        <div class="file-size">${formatFileSize(templateFile.size)}</div>
+                    </div>
+                    <button class="file-remove" onclick="removeTemplate()">×</button>
+                </div>
+            `;
+        }
+
+        function displayCsvFiles() {
+            const list = document.getElementById('csvList');
+            const fileNames = Object.keys(csvFiles);
+
+            if (fileNames.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = fileNames.map(fileName => `
+                <div class="file-item">
+                    <div class="file-icon">📊</div>
+                    <div class="file-info">
+                        <div class="file-name">${fileName}</div>
+                        <div class="file-size">${formatFileSize(csvFiles[fileName].size)}</div>
+                    </div>
+                    <button class="file-remove" onclick="removeCsv('${fileName}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeTemplate() {
+            templateFile = null;
+            document.getElementById('templateInput').value = '';
+            displayTemplateFile();
+            updateMergeButton();
+        }
+
+        function removeCsv(fileName) {
+            delete csvFiles[fileName];
+            displayCsvFiles();
+            updateMergeButton();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function updateMergeButton() {
+            const btn = document.getElementById('mergeBtn');
+            const hasFiles = templateFile && Object.keys(csvFiles).length > 0;
+            btn.disabled = !hasFiles;
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.classList.add('active');
+            progressFill.style.width = percent + '%';
+        }
+
+        function hideProgress() {
+            document.getElementById('progressBar').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        async function mergeFiles() {
+            try {
+                showStatus('Reading template file...', 'info');
+                updateProgress(10);
+
+                const templateData = await readFileAsArrayBuffer(templateFile);
+                const workbook = XLSX.read(templateData, { type: 'array', cellStyles: true });
+
+                updateProgress(30);
+                showStatus('Processing CSV files with strict rules...', 'info');
+
+                let processed = 0;
+                const totalCsvs = Object.keys(csvFiles).length;
+
+                for (const [fileName, file] of Object.entries(csvFiles)) {
+                    let sheetName = csvToSheetMapping[fileName];
+                    
+                    if (!sheetName) {
+                        sheetName = normalizeSheetName(fileName);
+                    }
+
+                    const csvText = await readFileAsText(file);
+                    let csvData = parseCSV(csvText);
+
+                    if (csvData.length === 0) {
+                        console.log(`${fileName} is empty, skipping...`);
+                        continue;
+                    }
+
+                    // Apply strict processing rules
+                    if (fileName.includes('DOC')) {
+                        csvData = processDocsIssued(csvData);
+                    } else if (fileName.includes('HSN')) {
+                        csvData = processHSNData(csvData, fileName);
+                    } else {
+                        csvData = csvData.map(row => trimAllFields(row));
+                    }
+
+                    let sheet = workbook.Sheets[sheetName];
+                    if (!sheet) {
+                        console.warn(`Sheet ${sheetName} not found in template`);
+                        continue;
+                    }
+
+                    const mapping = columnMappings[sheetName] || {};
+
+                    console.log(`Processing ${fileName} -> ${sheetName} (${csvData.length} rows)`);
+                    appendDataToSheetWithMapping(sheet, csvData, mapping, sheetName, fileName);
+                    
+                    processed++;
+                    updateProgress(30 + (processed / totalCsvs) * 50);
+                }
+
+                updateProgress(85);
+                showStatus('Generating Excel file...', 'info');
+
+                const outputData = XLSX.write(workbook, { 
+                    bookType: 'xlsx', 
+                    type: 'array',
+                    cellStyles: true 
+                });
+
+                updateProgress(95);
+
+                const blob = new Blob([outputData], { 
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+                });
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                saveAs(blob, `GSTR1_Processed_${timestamp}.xlsx`);
+
+                updateProgress(100);
+                showStatus('✅ Success! Your processed file has been downloaded.', 'success');
+                
+                setTimeout(hideProgress, 2000);
+
+            } catch (error) {
+                console.error('Processing error:', error);
+                showStatus('❌ Error: ' + error.message, 'error');
+                hideProgress();
+            }
+        }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length <= 1) return [];
+
+            function parseLine(line) {
+                const result = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        result.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                result.push(current.trim());
+                return result;
+            }
+
+            const headers = parseLine(lines[0]);
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = parseLine(lines[i]);
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                data.push(row);
+            }
+
+            return data;
+        }
+
+        function appendDataToSheetWithMapping(sheet, data, columnMapping, sheetName, fileName) {
+            if (data.length === 0) return;
+
+            const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
+            const templateHeaders = [];
+            
+            for (let col = range.s.c; col <= range.e.c; col++) {
+                const cellAddr = XLSX.utils.encode_cell({ r: 0, c: col });
+                const cell = sheet[cellAddr];
+                if (cell && cell.v) {
+                    templateHeaders.push(cell.v.toString().trim());
+                } else {
+                    templateHeaders.push('');
+                }
+            }
+
+            let startRow = range.e.r + 1;
+
+            data.forEach((csvRow, rowIndex) => {
+                const excelRowNum = startRow + rowIndex;
+                
+                templateHeaders.forEach((templateHeader, colIndex) => {
+                    if (!templateHeader) return;
+                    
+                    let csvValue = '';
+                    
+                    if (csvRow[templateHeader] !== undefined) {
+                        csvValue = csvRow[templateHeader];
+                    } else {
+                        for (const [csvCol, excelCol] of Object.entries(columnMapping)) {
+                            if (excelCol === templateHeader && csvRow[csvCol] !== undefined) {
+                                csvValue = csvRow[csvCol];
+                                break;
+                            }
+                        }
+                    }
+
+                    const cellAddr = XLSX.utils.encode_cell({ r: excelRowNum, c: colIndex });
+                    
+                    if (!csvValue && csvValue !== 0) {
+                        sheet[cellAddr] = { t: 's', v: '' };
+                        return;
+                    }
+
+                    let finalValue = csvValue;
+                    
+                    // RULE 3: Clean Place of Supply
+                    if (templateHeader === 'Place Of Supply' || templateHeader === 'Place of Supply') {
+                        finalValue = cleanPlaceOfSupply(csvValue);
+                    }
+                    
+                    // Convert Reverse Charge to RCM Applicable
+                    if (templateHeader === 'RCM Applicable') {
+                        finalValue = csvValue === 'Y' ? 'Yes' : csvValue === 'N' ? 'No' : csvValue;
+                    }
+                    
+                    // Parse dates
+                    if (templateHeader.toLowerCase().includes('date')) {
+                        const dateMatch = csvValue.toString().match(/(\d{1,2})-([A-Za-z]{3})-(\d{2})/);
+                        if (dateMatch) {
+                            const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+                            const day = parseInt(dateMatch[1]);
+                            const month = months[dateMatch[2]];
+                            const year = 2000 + parseInt(dateMatch[3]);
+                            finalValue = new Date(year, month, day);
+                        }
+                    }
+                    
+                    const numValue = parseFloat(finalValue.toString().replace(/,/g, ''));
+                    
+                    if (finalValue instanceof Date) {
+                        sheet[cellAddr] = { t: 'd', v: finalValue };
+                    } else if (!isNaN(numValue) && finalValue.toString().match(/^-?\d+\.?\d*$/)) {
+                        sheet[cellAddr] = { t: 'n', v: numValue };
+                    } else {
+                        sheet[cellAddr] = { t: 's', v: finalValue.toString().trim() };
+                    }
+                });
+            });
+
+            range.e.r = startRow + data.length - 1;
+            sheet['!ref'] = XLSX.utils.encode_range(range);
+            
+            console.log(`✓ Appended ${data.length} rows to ${sheetName}`);
+        }
+    </script>
+</body>
+</html>
