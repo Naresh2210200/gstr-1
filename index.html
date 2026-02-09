@@ -501,7 +501,7 @@
                 'Description': 'Description',
                 'Nil Rated Supplies': 'Nil Rated Supplies',
                 'Exempted (other than nil rated/non GST supply)': 'Exempted(other than nil rated/non GST supply)',
-                'Non-GST supplies': 'Non-GST supplies'
+                'Non-GST supplies': 'Non-GST Supplies'
             },
             'cdnr': {
                 'GSTIN/UIN of Recipient': 'GSTIN/UIN',
@@ -763,6 +763,10 @@
                     } else if (fileName.includes('HSN')) {
                         csvData = processHSNData(csvData, fileName);
                         log(`Processed HSN (${fileName}): ${csvData.length} rows with Type column`);
+                    } else if (fileName.includes('EXEMP')) {
+                        // For EXEMP, we need to UPDATE existing rows, not append
+                        csvData = csvData.map(row => trimAllFields(row));
+                        log(`Processed EXEMP: ${csvData.length} rows - will UPDATE existing template rows`);
                     } else {
                         csvData = csvData.map(row => trimAllFields(row));
                     }
@@ -776,7 +780,13 @@
                     const mapping = columnMappings[sheetName] || {};
 
                     log(`✓ Merging ${fileName} → ${sheetName} (${csvData.length} rows)`);
-                    appendDataToSheetWithMapping(sheet, csvData, mapping, sheetName);
+                    
+                    // Special handling for Nil_exempt_NonGST - UPDATE instead of APPEND
+                    if (sheetName === 'Nil_exempt_NonGST') {
+                        updateExemptSheet(sheet, csvData, mapping, sheetName);
+                    } else {
+                        appendDataToSheetWithMapping(sheet, csvData, mapping, sheetName);
+                    }
                     
                     processed++;
                     updateProgress(30 + (processed / totalCsvs) * 50);
@@ -871,6 +881,77 @@
             }
 
             return data;
+        }
+
+        function updateExemptSheet(sheet, data, columnMapping, sheetName) {
+            if (data.length === 0) return;
+
+            const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
+            const templateHeaders = [];
+            
+            // Get headers from row 0
+            for (let col = range.s.c; col <= range.e.c; col++) {
+                const cellAddr = XLSX.utils.encode_cell({ r: 0, c: col });
+                const cell = sheet[cellAddr];
+                templateHeaders.push(cell && cell.v ? cell.v.toString().trim() : '');
+            }
+
+            log(`Updating ${sheetName} - matching CSV descriptions to template rows`);
+
+            // For each CSV row, find matching template row by Description
+            data.forEach((csvRow) => {
+                const csvDesc = (csvRow['Description'] || '').toString().trim();
+                
+                // Find the matching row in template (search rows 1 onwards)
+                for (let row = 1; row <= range.e.r; row++) {
+                    const descCell = sheet[XLSX.utils.encode_cell({ r: row, c: 0 })];
+                    const templateDesc = descCell && descCell.v ? descCell.v.toString().trim() : '';
+                    
+                    if (templateDesc === csvDesc) {
+                        log(`  Matched: "${csvDesc}" at row ${row + 1}`);
+                        
+                        // Update this row with CSV data
+                        templateHeaders.forEach((templateHeader, colIndex) => {
+                            if (!templateHeader || colIndex === 0) return; // Skip Description column
+                            
+                            let csvValue = '';
+                            
+                            // Try direct match
+                            if (csvRow[templateHeader] !== undefined) {
+                                csvValue = csvRow[templateHeader];
+                            } else {
+                                // Try mapping
+                                for (const [csvCol, excelCol] of Object.entries(columnMapping)) {
+                                    const excelCols = Array.isArray(excelCol) ? excelCol : [excelCol];
+                                    if (excelCols.includes(templateHeader) && csvRow[csvCol] !== undefined) {
+                                        csvValue = csvRow[csvCol];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            const cellAddr = XLSX.utils.encode_cell({ r: row, c: colIndex });
+                            
+                            if (!csvValue && csvValue !== 0) {
+                                sheet[cellAddr] = { t: 'n', v: 0 };
+                                return;
+                            }
+
+                            const numValue = parseFloat(csvValue.toString().replace(/,/g, ''));
+                            
+                            if (!isNaN(numValue)) {
+                                sheet[cellAddr] = { t: 'n', v: numValue };
+                            } else {
+                                sheet[cellAddr] = { t: 's', v: csvValue.toString().trim() };
+                            }
+                        });
+                        
+                        break; // Found and updated, move to next CSV row
+                    }
+                }
+            });
+            
+            log(`✓ Updated ${data.length} rows in ${sheetName} sheet`);
         }
 
         function appendDataToSheetWithMapping(sheet, data, columnMapping, sheetName) {
