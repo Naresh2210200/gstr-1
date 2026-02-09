@@ -513,15 +513,12 @@
                 'Cess Amount': 'CESS'
             },
             'Docs_issued': {
-                'Nature of Document': 'Nature of Document',
-                'Type of Document': 'Nature of Document',
-                'Sr.No.From': 'Sr.No.From',
-                'Series From': 'Sr.No.From',
-                'Sr.No.To': 'Sr.No.To',
-                'Series To': 'Sr.No.To',
-                'Total Number': 'Total Number',
-                'Cancelled': 'Cancelled',
-                'Net Issued': 'Net Issued'
+                'Nature of Document': ['Nature of Document', 'Type of Document'],
+                'Sr.No.From': ['Sr.No.From', 'Series From'],
+                'Sr.No.To': ['Sr.No.To', 'Series To'],
+                'Total Number': ['Total Number'],
+                'Cancelled': ['Cancelled'],
+                'Net Issued': ['Net Issued']
             },
             'hsn': {
                 'Type': 'Type',
@@ -539,22 +536,29 @@
             }
         };
 
-        const csvToSheetMapping = {
-            'B2B.CSV': 'b2b',
-            'B2CL.CSV': 'b2cl',
-            'B2CS.CSV': 'b2cs',
-            'EXP.CSV': 'export',
-            'EXEMP.CSV': 'Nil_exempt_NonGST',
-            'CDNR.CSV': 'cdnr',
-            'CDNUR.CSV': 'cdnur',
-            'AT.CSV': 'adv_tax',
-            'ATADJ.CSV': 'adv_tax_adjusted',
-            'DOCS.CSV': 'Docs_issued',
-            'HSNB2B.CSV': 'hsn',
-            'HSNB2C.CSV': 'hsn',
-            'HSN(B2B).CSV': 'hsn',
-            'HSN(B2C).CSV': 'hsn'
-        };
+        function getSheetNameFromFile(fileName) {
+            const upper = fileName.toUpperCase();
+            
+            // Handle all HSN variations
+            if (upper.includes('HSN') && upper.includes('B2B')) return 'hsn';
+            if (upper.includes('HSN') && upper.includes('B2C')) return 'hsn';
+            
+            // Standard mappings
+            const mappings = {
+                'B2B.CSV': 'b2b',
+                'B2CL.CSV': 'b2cl',
+                'B2CS.CSV': 'b2cs',
+                'EXP.CSV': 'export',
+                'EXEMP.CSV': 'Nil_exempt_NonGST',
+                'CDNR.CSV': 'cdnr',
+                'CDNUR.CSV': 'cdnur',
+                'AT.CSV': 'adv_tax',
+                'ATADJ.CSV': 'adv_tax_adjusted',
+                'DOCS.CSV': 'Docs_issued'
+            };
+            
+            return mappings[fileName] || null;
+        }
 
         function setupDragDrop(zoneId, inputId) {
             const zone = document.getElementById(zoneId);
@@ -702,7 +706,7 @@
                 const totalCsvs = Object.keys(csvFiles).length;
 
                 for (const [fileName, file] of Object.entries(csvFiles)) {
-                    const sheetName = csvToSheetMapping[fileName];
+                    const sheetName = getSheetNameFromFile(fileName);
                     
                     if (!sheetName) {
                         console.warn(`No mapping for ${fileName}`);
@@ -857,9 +861,11 @@
                     if (csvRow[templateHeader] !== undefined) {
                         csvValue = csvRow[templateHeader];
                     } else {
-                        // Try mapping
+                        // Try mapping - handle both string and array mappings
                         for (const [csvCol, excelCol] of Object.entries(columnMapping)) {
-                            if (excelCol === templateHeader && csvRow[csvCol] !== undefined) {
+                            const excelCols = Array.isArray(excelCol) ? excelCol : [excelCol];
+                            
+                            if (excelCols.includes(templateHeader) && csvRow[csvCol] !== undefined) {
                                 csvValue = csvRow[csvCol];
                                 break;
                             }
