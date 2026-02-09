@@ -555,11 +555,11 @@
                 'Total Quantity': 'Total Quantity',
                 'Total Value': 'Total Value',
                 'Rate': 'Rate',
-                'Taxable Value': 'Taxable Value',
-                'Integrated Tax Amount': 'Integrated Tax Amount',
-                'Central Tax Amount': 'Central Tax Amount',
-                'State/UT Tax Amount': 'State/UT Tax Amount',
-                'Cess Amount': 'Cess Amount'
+                'Taxable Value': 'Total Taxable Value',  // CSV → Template
+                'Integrated Tax Amount': 'IGST',          // CSV → Template
+                'Central Tax Amount': 'CGST',             // CSV → Template
+                'State/UT Tax Amount': 'SGST',            // CSV → Template
+                'Cess Amount': 'CESS'                     // CSV → Template
             }
         };
 
@@ -887,8 +887,15 @@
 
             log(`Template headers in ${sheetName}: ${templateHeaders.join(', ')}`);
 
-            // Start at row 2 (right after headers)
+            // Find the next empty row - append after existing data
             let startRow = 1;
+            // Check if there's already data (range.e.r > 0 means rows beyond header exist)
+            if (range.e.r > 0) {
+                startRow = range.e.r + 1; // Start after last row with data
+                log(`Appending to ${sheetName} starting at row ${startRow + 1} (existing data ends at row ${range.e.r + 1})`);
+            } else {
+                log(`First data for ${sheetName}, starting at row 2`);
+            }
 
             data.forEach((csvRow, rowIndex) => {
                 const excelRowNum = startRow + rowIndex;
