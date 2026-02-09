@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSTR1 CSV Processor - Final Fixed</title>
+    <title>GSTR1 CSV Processor - HSN Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -307,6 +307,22 @@
             border-radius: 10px;
         }
 
+        .debug-log {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .debug-log.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             body { padding: 1rem; }
             .header h1 { font-size: 1.75rem; }
@@ -319,7 +335,7 @@
     <div class="container">
         <div class="header">
             <h1>📊 GSTR1 CSV Processor</h1>
-            <p>Professional GST return processing - All issues fixed</p>
+            <p>Fixed HSN_B2B_ and HSN_B2C_ mapping issue</p>
         </div>
 
         <div class="main-card">
@@ -365,6 +381,7 @@
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <div class="status" id="status"></div>
+                <div class="debug-log" id="debugLog"></div>
             </div>
         </div>
     </div>
@@ -372,6 +389,14 @@
     <script>
         let templateFile = null;
         let csvFiles = {};
+
+        function log(message) {
+            const debugLog = document.getElementById('debugLog');
+            debugLog.classList.add('active');
+            debugLog.innerHTML += `${new Date().toLocaleTimeString()}: ${message}<br>`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
+        }
 
         function cleanPlaceOfSupply(value) {
             if (!value) return '';
@@ -407,6 +432,8 @@
         function processHSNData(data, fileName) {
             const isB2B = fileName.toUpperCase().includes('B2B');
             const isB2C = fileName.toUpperCase().includes('B2C');
+            
+            log(`Processing HSN file: ${fileName}, isB2B: ${isB2B}, isB2C: ${isB2C}`);
             
             return data.map(row => {
                 const cleaned = trimAllFields(row);
@@ -528,36 +555,39 @@
                 'Total Quantity': 'Total Quantity',
                 'Total Value': 'Total Value',
                 'Rate': 'Rate',
-                'Taxable Value': 'Total Taxable Value',
-                'Integrated Tax Amount': 'IGST',
-                'Central Tax Amount': 'CGST',
-                'State/UT Tax Amount': 'SGST',
-                'Cess Amount': 'CESS'
+                'Taxable Value': 'Taxable Value',
+                'Integrated Tax Amount': 'Integrated Tax Amount',
+                'Central Tax Amount': 'Central Tax Amount',
+                'State/UT Tax Amount': 'State/UT Tax Amount',
+                'Cess Amount': 'Cess Amount'
             }
         };
 
         function getSheetNameFromFile(fileName) {
             const upper = fileName.toUpperCase();
             
-            // Handle all HSN variations
-            if (upper.includes('HSN') && upper.includes('B2B')) return 'hsn';
-            if (upper.includes('HSN') && upper.includes('B2C')) return 'hsn';
+            log(`Checking file: ${fileName}`);
             
-            // Standard mappings
-            const mappings = {
-                'B2B.CSV': 'b2b',
-                'B2CL.CSV': 'b2cl',
-                'B2CS.CSV': 'b2cs',
-                'EXP.CSV': 'export',
-                'EXEMP.CSV': 'Nil_exempt_NonGST',
-                'CDNR.CSV': 'cdnr',
-                'CDNUR.CSV': 'cdnur',
-                'AT.CSV': 'adv_tax',
-                'ATADJ.CSV': 'adv_tax_adjusted',
-                'DOCS.CSV': 'Docs_issued'
-            };
+            // FIXED: Handle HSN files with underscores and any variations
+            if (upper.includes('HSN')) {
+                log(`✓ Detected HSN file: ${fileName} → mapping to 'hsn' sheet`);
+                return 'hsn';
+            }
             
-            return mappings[fileName] || null;
+            // Standard mappings - use includes() for more flexibility
+            if (upper.includes('B2B.CSV')) return 'b2b';
+            if (upper.includes('B2CL.CSV')) return 'b2cl';
+            if (upper.includes('B2CS.CSV')) return 'b2cs';
+            if (upper.includes('EXP.CSV')) return 'export';
+            if (upper.includes('EXEMP.CSV')) return 'Nil_exempt_NonGST';
+            if (upper.includes('CDNR.CSV') && !upper.includes('CDNUR')) return 'cdnr';
+            if (upper.includes('CDNUR.CSV')) return 'cdnur';
+            if (upper.includes('ATADJ.CSV')) return 'adv_tax_adjusted';
+            if (upper.includes('AT.CSV') && !upper.includes('ATADJ')) return 'adv_tax';
+            if (upper.includes('DOCS.CSV')) return 'Docs_issued';
+            
+            log(`✗ No mapping found for: ${fileName}`);
+            return null;
         }
 
         function setupDragDrop(zoneId, inputId) {
@@ -693,11 +723,16 @@
 
         async function mergeFiles() {
             try {
+                document.getElementById('debugLog').innerHTML = '';
+                log('Starting merge process...');
+                
                 showStatus('Reading template file...', 'info');
                 updateProgress(10);
 
                 const templateData = await readFileAsArrayBuffer(templateFile);
                 const workbook = XLSX.read(templateData, { type: 'array', cellStyles: true });
+
+                log(`Template loaded. Sheets: ${workbook.SheetNames.join(', ')}`);
 
                 updateProgress(30);
                 showStatus('Processing CSV files...', 'info');
@@ -709,7 +744,7 @@
                     const sheetName = getSheetNameFromFile(fileName);
                     
                     if (!sheetName) {
-                        console.warn(`No mapping for ${fileName}`);
+                        log(`⚠ No mapping for ${fileName}, skipping`);
                         continue;
                     }
 
@@ -717,28 +752,30 @@
                     let csvData = parseCSV(csvText);
 
                     if (csvData.length === 0) {
-                        console.log(`${fileName} is empty, skipping`);
+                        log(`⚠ ${fileName} is empty, skipping`);
                         continue;
                     }
 
                     // Apply processing rules
                     if (fileName.includes('DOC')) {
                         csvData = processDocsIssued(csvData);
+                        log(`Processed DOCS: ${csvData.length} rows`);
                     } else if (fileName.includes('HSN')) {
                         csvData = processHSNData(csvData, fileName);
+                        log(`Processed HSN (${fileName}): ${csvData.length} rows with Type column`);
                     } else {
                         csvData = csvData.map(row => trimAllFields(row));
                     }
 
                     const sheet = workbook.Sheets[sheetName];
                     if (!sheet) {
-                        console.warn(`Sheet ${sheetName} not found`);
+                        log(`✗ Sheet '${sheetName}' not found in template!`);
                         continue;
                     }
 
                     const mapping = columnMappings[sheetName] || {};
 
-                    console.log(`Processing ${fileName} → ${sheetName} (${csvData.length} rows)`);
+                    log(`✓ Merging ${fileName} → ${sheetName} (${csvData.length} rows)`);
                     appendDataToSheetWithMapping(sheet, csvData, mapping, sheetName);
                     
                     processed++;
@@ -763,12 +800,14 @@
                 saveAs(blob, `GSTR1_Processed_${timestamp}.xlsx`);
 
                 updateProgress(100);
+                log('✓ Process completed successfully!');
                 showStatus('✅ Success! File downloaded.', 'success');
                 
                 setTimeout(hideProgress, 2000);
 
             } catch (error) {
                 console.error('Error:', error);
+                log(`✗ ERROR: ${error.message}`);
                 showStatus('❌ Error: ' + error.message, 'error');
                 hideProgress();
             }
@@ -846,7 +885,9 @@
                 templateHeaders.push(cell && cell.v ? cell.v.toString().trim() : '');
             }
 
-            // Start at row 2 (right after headers) - FIX FOR EMPTY SPACE ISSUE
+            log(`Template headers in ${sheetName}: ${templateHeaders.join(', ')}`);
+
+            // Start at row 2 (right after headers)
             let startRow = 1;
 
             data.forEach((csvRow, rowIndex) => {
@@ -931,7 +972,7 @@
             range.e.r = startRow + data.length - 1;
             sheet['!ref'] = XLSX.utils.encode_range(range);
             
-            console.log(`✓ Added ${data.length} rows to ${sheetName}`);
+            log(`✓ Added ${data.length} rows to ${sheetName} sheet`);
         }
     </script>
 </body>
