@@ -968,12 +968,29 @@
 
             log(`Template headers in ${sheetName}: ${templateHeaders.join(', ')}`);
 
-            // Find the next empty row - append after existing data
+            // Find the next empty row - need to check if rows actually have data
             let startRow = 1;
-            // Check if there's already data (range.e.r > 0 means rows beyond header exist)
-            if (range.e.r > 0) {
-                startRow = range.e.r + 1; // Start after last row with data
-                log(`Appending to ${sheetName} starting at row ${startRow + 1} (existing data ends at row ${range.e.r + 1})`);
+            let lastRowWithData = 0;
+            
+            // Check each row to find the last one with actual data (not just empty cells)
+            for (let row = 1; row <= range.e.r; row++) {
+                let hasData = false;
+                for (let col = range.s.c; col <= range.e.c; col++) {
+                    const cellAddr = XLSX.utils.encode_cell({ r: row, c: col });
+                    const cell = sheet[cellAddr];
+                    if (cell && cell.v !== undefined && cell.v !== null && cell.v !== '') {
+                        hasData = true;
+                        break;
+                    }
+                }
+                if (hasData) {
+                    lastRowWithData = row;
+                }
+            }
+            
+            if (lastRowWithData > 0) {
+                startRow = lastRowWithData + 1; // Start after last row with data
+                log(`Appending to ${sheetName} starting at row ${startRow + 1} (last data row: ${lastRowWithData + 1})`);
             } else {
                 log(`First data for ${sheetName}, starting at row 2`);
             }
