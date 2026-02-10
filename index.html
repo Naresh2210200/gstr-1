@@ -586,13 +586,15 @@ UEsDBBQABgAIAAAAIQApOzsgsAEAAIwNAAATAAgCW0NvbnRlbnRfVHlwZXNdLnhtbCCiBAIooAACAAAA
                             const day = parseInt(dateMatch[1]);
                             const month = months[dateMatch[2]];
                             const year = 2000 + parseInt(dateMatch[3]);
-                            finalValue = new Date(year, month, day);
+                            
+                            // Format as DD-MM-YYYY string instead of Date object
+                            const dayStr = day.toString().padStart(2, '0');
+                            const monthStr = (month + 1).toString().padStart(2, '0');
+                            finalValue = `${dayStr}-${monthStr}-${year}`;
                         }
                     }
                     const numValue = parseFloat(finalValue.toString().replace(/,/g, ''));
-                    if (finalValue instanceof Date) {
-                        sheet[cellAddr] = { t: 'd', v: finalValue };
-                    } else if (!isNaN(numValue) && finalValue.toString().match(/^-?\d+\.?\d*$/)) {
+                    if (!isNaN(numValue) && finalValue.toString().match(/^-?\d+\.?\d*$/)) {
                         sheet[cellAddr] = { t: 'n', v: numValue };
                     } else {
                         sheet[cellAddr] = { t: 's', v: finalValue.toString().trim() };
