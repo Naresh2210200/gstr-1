@@ -755,7 +755,8 @@ UEsDBBQABgAIAAAAIQApOzsgsAEAAIwNAAATAAgCW0NvbnRlbnRfVHlwZXNdLnhtbCCiBAIooAACAAAA
                             const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
                             const day = parseInt(dateMatch[1]);
                             const month = months[dateMatch[2]];
-                            const year = 2000 + parseInt(dateMatch[3]);
+                            let year = parseInt(dateMatch[3]);
+                            if (year < 100) year = 2000 + year;
                             const dayStr = day.toString().padStart(2, '0');
                             const monthStr = (month + 1).toString().padStart(2, '0');
                             finalValue = `${dayStr}-${monthStr}-${year}`;
