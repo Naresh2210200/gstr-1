@@ -13,8 +13,8 @@
             --primary: #2563eb; --primary-dark: #1e40af; --success: #10b981;
             --danger: #ef4444; --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
             --text-light: #64748b; --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         body { font-family: 'DM Sans', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 2rem; color: var(--text); }
         .container { max-width: 1000px; margin: 0 auto; }
@@ -31,13 +31,13 @@
         .format-selector { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
         .format-option { flex: 1; padding: 1.5rem; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; transition: all 0.3s ease; text-align: center; }
         .format-option:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
-        .format-option.active { border-color: var(--primary); background: rgba(37,99,235,0.1); box-shadow: var(--shadow); }
+        .format-option.active { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); box-shadow: var(--shadow); }
         .format-option .format-icon { font-size: 2rem; margin-bottom: 0.5rem; }
         .format-option .format-name { font-weight: 700; font-size: 1.1rem; color: var(--text); }
         .format-option .format-desc { font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem; }
         .upload-zone { border: 3px dashed var(--border); border-radius: 15px; padding: 3rem 2rem; text-align: center; background: var(--bg); transition: all 0.3s ease; cursor: pointer; }
-        .upload-zone:hover { border-color: var(--primary); background: rgba(37,99,235,0.05); }
-        .upload-zone.dragover { border-color: var(--primary); background: rgba(37,99,235,0.1); transform: scale(1.02); }
+        .upload-zone:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+        .upload-zone.dragover { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); transform: scale(1.02); }
         .upload-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.6; }
         .upload-text { font-size: 1.1rem; color: var(--text); margin-bottom: 0.5rem; }
         .upload-hint { font-size: 0.9rem; color: var(--text-light); }
@@ -51,7 +51,7 @@
         .file-name { font-weight: 600; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .file-size { font-size: 0.75rem; color: var(--text-light); }
         .file-remove { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; padding: 0.25rem; border-radius: 5px; transition: all 0.2s ease; }
-        .file-remove:hover { background: rgba(239,68,68,0.1); }
+        .file-remove:hover { background: rgba(239, 68, 68, 0.1); }
         .btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 1px; }
         .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
         .btn:active:not(:disabled) { transform: translateY(0); }
@@ -59,9 +59,9 @@
         .btn-container { text-align: center; margin-top: 2rem; }
         .status { margin-top: 1.5rem; padding: 1rem; border-radius: 10px; display: none; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .status.success { background: rgba(16,185,129,0.1); border: 2px solid var(--success); color: var(--success); display: block; }
-        .status.error { background: rgba(239,68,68,0.1); border: 2px solid var(--danger); color: var(--danger); display: block; }
-        .status.info { background: rgba(37,99,235,0.1); border: 2px solid var(--primary); color: var(--primary); display: block; }
+        .status.success { background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); color: var(--success); display: block; }
+        .status.error { background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); color: var(--danger); display: block; }
+        .status.info { background: rgba(37, 99, 235, 0.1); border: 2px solid var(--primary); color: var(--primary); display: block; }
         .progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; margin-top: 1rem; display: none; }
         .progress-bar.active { display: block; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 0%; transition: width 0.3s ease; border-radius: 10px; }
@@ -113,706 +113,313 @@
 <script>
 
 // ================================================================
-//  EMBEDDED TEMPLATE — PASTE YOUR BASE64 STRING BELOW
+//  PASTE YOUR TEMPLATE BASE64 STRING BETWEEN THE BACKTICKS BELOW
 // ================================================================
-const EMBEDDED_TEMPLATE_BASE64 = `UEsDBBQABgAIAAAAIQApOzsgsAEAAIwNAAATAAgCW0NvbnRlbnRfVHlwZXNdLnhtbCCiBAIooAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMl9tOwzAMhu`;
+const EMBEDDED_TEMPLATE_BASE64 = ``;
 // ================================================================
 
 let csvFiles = {};
 let selectedFormat = 'standard';
 
-// Sheet name mapping for Tally Excel
 const TALLY_SHEET_MAP = {
-    'b2b,sez,de':   'b2b',
-    'b2b':          'b2b',
-    'b2cl':         'b2cl',
-    'b2cs':         'b2cs',
-    'cdnr':         'cdnr',
-    'cdnur':        'cdnur',
-    'exp':          'export',
-    'at':           'adv_tax',
-    'atadj':        'adv_tax_adjusted',
-    'exemp':        'Nil_exempt_NonGST',
-    'hsn(b2b)':     'hsn',
-    'hsn(b2c)':     'hsn',
-    'docs':         'Docs_issued'
+    'b2b,sez,de':'b2b','b2cl':'b2cl','b2cs':'b2cs','cdnr':'cdnr','cdnur':'cdnur',
+    'exp':'export','at':'adv_tax','atadj':'adv_tax_adjusted',
+    'exemp':'Nil_exempt_NonGST','hsn(b2b)':'hsn','hsn(b2c)':'hsn','docs':'Docs_issued'
 };
 
-// ================================================================
-// COLUMN MAPPINGS: CSV column name -> Template Excel header name
-// These are FALLBACK mappings. The fuzzy resolver handles
-// variations automatically so you rarely need to edit these.
-// ================================================================
 const columnMappingsStandard = {
-    'b2b': {
-        'GSTIN/UIN of Recipient': 'GSTIN/UIN',
-        'Invoice Number':         'Invoice No',
-        'Invoice date':           'Date of Invoice',
-        'Invoice Value':          'Invoice Value',
-        'Rate':                   'GST%',
-        'Taxable Value':          'Taxable Value',
-        'Cess Amount':            'CESS',
-        'Place Of Supply':        'Place Of Supply',
-        'Reverse Charge':         'RCM Applicable',
-        'Invoice Type':           'Invoice Type',
-        'E-Commerce GSTIN':       'E-Commerce GSTIN'
+    'b2b':{
+        'GSTIN/UIN of Recipient':'GSTIN/UIN','Invoice Number':'Invoice No',
+        'Invoice date':'Date of Invoice','Invoice Value':'Invoice Value',
+        'Rate':'GST%','Taxable Value':'Taxable Value','Cess Amount':'CESS',
+        'Place Of Supply':'Place Of Supply','Reverse Charge':'RCM Applicable',
+        'Invoice Type':'Invoice Type','E-Commerce GSTIN':'E-Commerce GSTIN'
     },
-    'b2cl': {
-        'Invoice Number':   'Invoice No',
-        'Invoice date':     'Invoice Date',
-        'Invoice Value':    'Invoice Value',
-        'Place Of Supply':  'Place Of Supply',
-        'Rate':             'GST%',
-        'Taxable Value':    'Taxable Value',
-        'Cess Amount':      'CESS',
-        'E-Commerce GSTIN': 'GSTIN of E-Commerce Operator'
+    'b2cl':{
+        'Invoice Number':'Invoice No','Invoice date':'Date of Invoice',
+        'Invoice Value':'Invoice Value','Place Of Supply':'Place Of Supply',
+        'Rate':'GST%','Taxable Value':'Taxable Value','Cess Amount':'CESS',
+        'E-Commerce GSTIN':'E-Commerce GSTIN'
     },
-    'b2cs': {
-        'Place Of Supply':  'Place Of Supply',
-        'Rate':             'GST%',
-        'Taxable Value':    'Taxable Value',
-        'Cess Amount':      'CESS',
-        'E-Commerce GSTIN': 'GSTIN of E-Commerce Operator'
+    'b2cs':{
+        'Type':'Type','Place Of Supply':'Place Of Supply','Rate':'GST%',
+        'Taxable Value':'Taxable Value','Cess Amount':'CESS','E-Commerce GSTIN':'E-Commerce GSTIN'
     },
-    'export': {
-        'Export Type':          'Type Of Export',
-        'Invoice Number':       'Invoice No',
-        'Invoice date':         'Invoice Date',
-        'Invoice Value':        'Invoice Value',
-        'Port Code':            'Port Code',
-        'Shipping Bill Number': 'Shipping bill/ bill of export No',
-        'Shipping Bill Date':   'Shipping bill/ bill of export Date',
-        'Rate':                 'GST%',
-        'Taxable Value':        'Taxable Value'
+    'export':{
+        'Export Type':'Export Type','Invoice Number':'Invoice No',
+        'Invoice date':'Date of Invoice','Invoice Value':'Invoice Value',
+        'Port Code':'Port Code','Shipping Bill Number':'Shipping Bill No',
+        'Shipping Bill Date':'Shipping Bill Date','Rate':'GST%','Taxable Value':'Taxable Value'
     },
-    'Nil_exempt_NonGST': {
-        'Description':                                       'Description',
-        'Nil Rated Supplies':                                'Nil Rated Supplies',
-        'Exempted (other than nil rated/non GST supply)':   'Exempted(other than nil rated/non GST supply)',
-        'Non-GST supplies':                                  'Non-GST Supplies'
+    'Nil_exempt_NonGST':{
+        'Description':'Description','Nil Rated Supplies':'Nil Rated Supplies',
+        'Exempted (other than nil rated/non GST supply)':'Exempted(other than nil rated/non GST supply)',
+        'Non-GST supplies':'Non-GST Supplies'
     },
-    'cdnr': {
-        'GSTIN/UIN of Recipient': 'GSTIN/UIN',
-        'Note Number':            'Dr./ Cr. No.',
-        'Note Date':              'Dr./Cr. Date',
-        'Note Type':              'Type of note                (Dr/ Cr)',
-        'Place Of Supply':        'Place of supply',
-        'Reverse Charge':         'RCM',
-        'Note Supply Type':       'Invoice Type',
-        'Note Value':             'Dr./Cr. Value',
-        'Rate':                   'GST%',
-        'Taxable Value':          'Taxable Value',
-        'Cess Amount':            'CESS'
+    'cdnr':{
+        'GSTIN/UIN of Recipient':'GSTIN/UIN','Note Number':'Dr./ Cr. No.',
+        'Note Date':'Dr./Cr. Date','Note Type':'Type of note                (Dr/ Cr)',
+        'Place Of Supply':'Place of supply','Reverse Charge':'RCM',
+        'Note Supply Type':'Invoice Type','Note Value':'Dr./Cr. Value',
+        'Rate':'GST%','Taxable Value':'Taxable Value','Cess Amount':'CESS'
     },
-    'cdnur': {
-        'UR Type':                     'Supply Type',
-        'Note/Refund Voucher Number':  'Dr./ Cr. Note No.',
-        'Note/Refund Voucher date':    'Dr./ Cr. Note Date',
-        'Document Type':               'Type of note (Dr./ Cr.)',
-        'Place Of Supply':             'Place of supply',
-        'Note/Refund Voucher Value':   'Dr./Cr. Note Value',
-        'Rate':                        'GST%',
-        'Taxable Value':               'Taxable Value',
-        'Cess Amount':                 'CESS'
+    'cdnur':{
+        'UR Type':'Supply Type','Note/Refund Voucher Number':'Dr./ Cr. Note No.',
+        'Note/Refund Voucher date':'Dr./ Cr. Note Date',
+        'Document Type':'Type of note (Dr./ Cr.)','Place Of Supply':'Place of supply',
+        'Note/Refund Voucher Value':'Dr./Cr. Note Value','Rate':'GST%',
+        'Taxable Value':'Taxable Value','Cess Amount':'CESS'
     },
-    'adv_tax': {
-        'Place Of Supply':        'Place of Supply',
-        'Rate':                   'GST%',
-        'Gross Advance Received': 'Gross Advance Received',
-        'Cess Amount':            'CESS'
+    'adv_tax':{'Place Of Supply':'Place Of Supply','Rate':'GST%','Gross Advance Received':'Gross Advance Received','Cess Amount':'CESS'},
+    'adv_tax_adjusted':{'Place Of Supply':'Place Of Supply','Rate':'GST%','Gross Advance Adjusted':'Gross Advance Adjusted','Cess Amount':'CESS'},
+    'Docs_issued':{
+        'Nature of Document':'Type of Document',
+        'Sr.No.From':'Series From',
+        'Sr.No.To':'Series To',
+        'Total Number':'Total Number',
+        'Cancelled':'Cancelled',
+        'Net Issued':'Net Issued'
     },
-    'adv_tax_adjusted': {
-        'Place Of Supply':        'Place Of Supply',
-        'Rate':                   'GST%',
-        'Gross Advance Adjusted': 'Advance adjusted',
-        'Cess Amount':            'CESS'
-    },
-    'Docs_issued': {
-        'Nature of Document': 'Type of Document',
-        'Sr.No.From':         'Series From',
-        'Sr.No.To':           'Series To',
-        'Total Number':       'Total Number',
-        'Cancelled':          'Cancelled',
-        'Net Issued':         'Net Issued'
-    },
-    'hsn': {
-        'Type':                  'Type',
-        'HSN':                   'HSN',
-        'Description':           'Description',
-        'UQC':                   'UQC',
-        'Total Quantity':        'Total Quantity',
-        'Total Value':           'Total Value',
-        'Rate':                  'Rate',
-        'Taxable Value':         'Total Taxable Value',
-        'Integrated Tax Amount': 'IGST',
-        'Central Tax Amount':    'CGST',
-        'State/UT Tax Amount':   'SGST',
-        'Cess Amount':           'CESS'
+    'hsn':{
+        'Type':'Type','HSN':'HSN','Description':'Description','UQC':'UQC',
+        'Total Quantity':'Total Quantity','Total Value':'Total Value','Rate':'Rate',
+        'Taxable Value':'Total Taxable Value','Integrated Tax Amount':'IGST',
+        'Central Tax Amount':'CGST','State/UT Tax Amount':'SGST','Cess Amount':'CESS'
     }
 };
 
-// ================================================================
-// FUZZY HEADER RESOLVER
-// Handles varying/inconsistent GSTN export headers from different
-// software (ClearTax, Tally, GSTN portal, etc.)
-// Priority: 1) Exact  2) Case-insensitive  3) Keyword fallback
-// ================================================================
-const HEADER_KEYWORD_MAP = {
-    // B2B / General
-    'gstin/uin of recipient':      ['gstin', 'recipient gstin', 'party gstin', 'customer gstin', 'uin'],
-    'invoice number':              ['invoice no', 'invoice number', 'voucher no', 'bill no', 'inv no', 'inv number'],
-    'invoice date':                ['invoice date', 'date of invoice', 'voucher date', 'bill date', 'inv date'],
-    'invoice value':               ['invoice value', 'total value', 'bill amount', 'grand total', 'total amount'],
-    'place of supply':             ['place of supply', 'pos', 'supply state'],
-    'reverse charge':              ['reverse charge', 'rcm applicable', 'rcm', 'applicable % of tax rate', 'applicable %'],
-    'invoice type':                ['invoice type', 'type of invoice', 'supply type'],
-    'e-commerce gstin':            ['e-commerce gstin', 'ecommerce gstin', 'e commerce gstin', 'eco gstin'],
-    'rate':                        ['rate', 'gst rate', 'tax rate', 'gst%', 'gst %'],
-    'taxable value':               ['taxable value', 'taxable amount', 'assessable value', 'taxable val'],
-    'cess amount':                 ['cess amount', 'cess', 'cess value'],
-    // B2CL
-    'gstin of e-commerce operator':['e-commerce gstin', 'ecommerce gstin', 'eco gstin', 'e commerce gstin'],
-    // Export
-    'export type':                 ['export type', 'type of export', 'exp type'],
-    'port code':                   ['port code', 'port'],
-    'shipping bill number':        ['shipping bill no', 'shipping bill number', 'bill of export no', 'shipping no'],
-    'shipping bill date':          ['shipping bill date', 'bill of export date', 'shipping date'],
-    // CDNR
-    'note number':                 ['note number', 'note no', 'credit note no', 'debit note no', 'dr./ cr. no', 'dr/cr no', 'voucher no'],
-    'note date':                   ['note date', 'credit note date', 'debit note date', 'dr./cr. date', 'dr/cr date'],
-    'note type':                   ['note type', 'type of note', 'dr/ cr', 'dr/cr'],
-    'note supply type':            ['note supply type', 'supply type', 'invoice type'],
-    'note value':                  ['note value', 'dr./cr. value', 'dr/cr value', 'credit note value', 'debit note value'],
-    // CDNUR
-    'ur type':                     ['ur type', 'unregistered type', 'supply type'],
-    'note/refund voucher number':  ['note no', 'voucher no', 'refund voucher no', 'dr./ cr. note no'],
-    'note/refund voucher date':    ['note date', 'voucher date', 'refund voucher date', 'dr./ cr. note date'],
-    'document type':               ['document type', 'doc type', 'type of note'],
-    'note/refund voucher value':   ['note value', 'voucher value', 'refund value', 'dr./cr. note value'],
-    // Advance Tax
-    'gross advance received':      ['gross advance received', 'advance received', 'gross advance'],
-    'gross advance adjusted':      ['gross advance adjusted', 'advance adjusted', 'adjusted advance'],
-    // Docs Issued
-    'nature of document':          ['nature of document', 'document type', 'type of document', 'doc type'],
-    'sr.no.from':                  ['sr.no.from', 'sr. no. from', 'series from', 'from', 'from no'],
-    'sr.no.to':                    ['sr.no.to', 'sr. no. to', 'series to', 'to', 'to no'],
-    'total number':                ['total number', 'total', 'total docs'],
-    'cancelled':                   ['cancelled', 'cancelled docs'],
-    'net issued':                  ['net issued', 'issued'],
-    // HSN
-    'hsn':                         ['hsn', 'hsn/sac', 'hsn code', 'sac'],
-    'description':                 ['description', 'goods description', 'item description', 'commodity'],
-    'uqc':                         ['uqc', 'unit', 'unit of measurement', 'uom'],
-    'total quantity':              ['total quantity', 'quantity', 'qty', 'total qty'],
-    'total value':                 ['total value', 'value', 'total amount'],
-    'integrated tax amount':       ['integrated tax amount', 'igst amount', 'igst', 'integrated tax'],
-    'central tax amount':          ['central tax amount', 'cgst amount', 'cgst', 'central tax'],
-    'state/ut tax amount':         ['state/ut tax amount', 'sgst amount', 'sgst', 'utgst', 'state tax', 'ut tax'],
-    'total taxable value':         ['total taxable value', 'taxable value', 'taxable amount', 'assessable value'],
-    // Exempt
-    'nil rated supplies':          ['nil rated', 'nil rated supplies', 'nil'],
-    'exempted(other than nil rated/non gst supply)': ['exempted', 'exempt', 'exempted other'],
-    'non-gst supplies':            ['non-gst', 'non gst', 'non-gst supplies']
-};
-
-function resolveCsvHeader(csvHeaders, targetKey) {
-    if (!targetKey) return null;
-
-    // 1. Exact match
-    if (csvHeaders.includes(targetKey)) return targetKey;
-
-    // 2. Case-insensitive exact match
-    const targetLower = targetKey.toLowerCase().trim();
-    let found = csvHeaders.find(h => h.toLowerCase().trim() === targetLower);
-    if (found) return found;
-
-    // 3. Keyword-based fuzzy match
-    const keywords = HEADER_KEYWORD_MAP[targetLower] || [targetLower];
-    found = csvHeaders.find(h => {
-        const hLower = h.toLowerCase().trim();
-        return keywords.some(kw => hLower.includes(kw) || kw.includes(hLower));
-    });
-    if (found) return found;
-
-    // 4. Last resort: partial word overlap
-    found = csvHeaders.find(h => {
-        const hWords = h.toLowerCase().trim().split(/[\s\/\-_]+/);
-        const tWords = targetLower.split(/[\s\/\-_]+/);
-        return tWords.some(tw => tw.length > 3 && hWords.some(hw => hw.includes(tw) || tw.includes(hw)));
-    });
-    return found || null;
-}
-
-// Resolve a CSV row value given a template header, using fuzzy matching
-function resolveValue(csvRow, templateHeader, columnMapping) {
-    const csvHeaders = Object.keys(csvRow);
-    const tLower = templateHeader.toLowerCase().trim();
-
-    // 1. Direct match on template header in CSV row
-    let resolved = resolveCsvHeader(csvHeaders, templateHeader);
-    if (resolved && csvRow[resolved] !== undefined) return csvRow[resolved];
-
-    // 2. Walk the column mapping: find which CSV key maps to this template header
-    for (const [csvKey, excelHeader] of Object.entries(columnMapping)) {
-        const targets = Array.isArray(excelHeader) ? excelHeader : [excelHeader];
-        const match = targets.find(t => t.toLowerCase().trim() === tLower);
-        if (match) {
-            // Fuzzy-resolve the CSV key
-            const resolvedCsvKey = resolveCsvHeader(csvHeaders, csvKey);
-            if (resolvedCsvKey && csvRow[resolvedCsvKey] !== undefined) {
-                return csvRow[resolvedCsvKey];
-            }
-        }
-    }
-
-    return '';
-}
-
-// ================================================================
-// FORMAT SELECTION & UI
-// ================================================================
 function selectFormat(format) {
     selectedFormat = format;
-    ['standardFormat', 'tallyFormat', 'tallyExcelFormat'].forEach(id =>
-        document.getElementById(id).classList.remove('active')
-    );
-    const idMap = { standard: 'standardFormat', tally: 'tallyFormat', tallyExcel: 'tallyExcelFormat' };
-    document.getElementById(idMap[format]).classList.add('active');
-
+    ['standardFormat','tallyFormat','tallyExcelFormat'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(format==='tallyExcel'?'tallyExcelFormat':format==='tally'?'tallyFormat':'standardFormat').classList.add('active');
     const isTallyExcel = format === 'tallyExcel';
     const input = document.getElementById('csvInput');
     if (isTallyExcel) {
-        input.accept = '.xlsx'; input.multiple = false;
-        document.getElementById('uploadTitle').textContent = 'Upload Tally Excel File';
-        document.getElementById('uploadIcon').textContent = '🗂️';
-        document.getElementById('uploadText').textContent = 'Click or drag your Tally .xlsx file here';
-        document.getElementById('uploadHint').textContent = 'Single file exported from Tally (all sheets included)';
+        input.accept='.xlsx'; input.multiple=false;
+        document.getElementById('uploadTitle').textContent='Upload Tally Excel File';
+        document.getElementById('uploadIcon').textContent='🗂️';
+        document.getElementById('uploadText').textContent='Click or drag your Tally .xlsx file here';
+        document.getElementById('uploadHint').textContent='Single file exported from Tally (all sheets included)';
     } else {
-        input.accept = '.csv'; input.multiple = true;
-        document.getElementById('uploadTitle').textContent = 'Upload CSV Files';
-        document.getElementById('uploadIcon').textContent = '📁';
-        document.getElementById('uploadText').textContent = 'Click or drag your CSV files here';
-        document.getElementById('uploadHint').textContent = 'Select all CSV files at once';
+        input.accept='.csv'; input.multiple=true;
+        document.getElementById('uploadTitle').textContent='Upload CSV Files';
+        document.getElementById('uploadIcon').textContent='📁';
+        document.getElementById('uploadText').textContent='Click or drag your CSV files here';
+        document.getElementById('uploadHint').textContent='Select all CSV files at once';
     }
-    csvFiles = {};
-    displayCsvFiles();
-    updateMergeButton();
+    csvFiles = {}; displayCsvFiles(); updateMergeButton();
 }
 
 function triggerUpload() { document.getElementById('csvInput').click(); }
 
 (function setupDragDrop() {
     const zone = document.getElementById('csvZone');
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev =>
-        zone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, false)
-    );
-    ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, () => zone.classList.add('dragover'), false));
-    ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('dragover'), false));
-    zone.addEventListener('drop', e => {
-        document.getElementById('csvInput').files = e.dataTransfer.files;
-        handleFileSelect();
-    }, false);
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, false));
+    ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, () => zone.classList.add('dragover'), false));
+    ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('dragover'), false));
+    zone.addEventListener('drop', e => { document.getElementById('csvInput').files = e.dataTransfer.files; handleFileSelect(); }, false);
 })();
 
 document.getElementById('csvInput').addEventListener('change', handleFileSelect);
 
 function handleFileSelect() {
-    Array.from(document.getElementById('csvInput').files).forEach(f => {
-        csvFiles[f.name.toUpperCase()] = f;
-    });
-    displayCsvFiles();
-    updateMergeButton();
+    Array.from(document.getElementById('csvInput').files).forEach(f => { csvFiles[f.name.toUpperCase()] = f; });
+    displayCsvFiles(); updateMergeButton();
 }
-
 function displayCsvFiles() {
     const names = Object.keys(csvFiles);
     document.getElementById('csvList').innerHTML = names.length === 0 ? '' : names.map(n => `
         <div class="file-item">
-            <div class="file-icon">${n.endsWith('.XLSX') ? '🗂️' : '📊'}</div>
-            <div class="file-info">
-                <div class="file-name">${n}</div>
-                <div class="file-size">${formatFileSize(csvFiles[n].size)}</div>
-            </div>
+            <div class="file-icon">${n.endsWith('.XLSX')?'🗂️':'📊'}</div>
+            <div class="file-info"><div class="file-name">${n}</div><div class="file-size">${formatFileSize(csvFiles[n].size)}</div></div>
             <button class="file-remove" onclick="removeCsv('${n}')">×</button>
         </div>`).join('');
 }
-
 function removeCsv(name) { delete csvFiles[name]; displayCsvFiles(); updateMergeButton(); }
-function formatFileSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+function formatFileSize(b) { return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'; }
 function updateMergeButton() { document.getElementById('mergeBtn').disabled = Object.keys(csvFiles).length === 0; }
-function showStatus(msg, type) { const s = document.getElementById('status'); s.textContent = msg; s.className = 'status ' + type; }
-function updateProgress(pct) { document.getElementById('progressBar').classList.add('active'); document.getElementById('progressFill').style.width = pct + '%'; }
-function hideProgress() { document.getElementById('progressBar').classList.remove('active'); document.getElementById('progressFill').style.width = '0%'; }
+function showStatus(msg, type) { const s=document.getElementById('status'); s.textContent=msg; s.className='status '+type; }
+function updateProgress(pct) { document.getElementById('progressBar').classList.add('active'); document.getElementById('progressFill').style.width=pct+'%'; }
+function hideProgress() { document.getElementById('progressBar').classList.remove('active'); document.getElementById('progressFill').style.width='0%'; }
 
-// ================================================================
-// MAIN PROCESS ENTRY
-// ================================================================
 async function mergeFiles() {
     try {
         const cleanB64 = EMBEDDED_TEMPLATE_BASE64.replace(/\s+/g, '');
-
-        if (!cleanB64 || cleanB64.length < 2000) {
-            showStatus('❌ Template not embedded. Paste your Base64 string into EMBEDDED_TEMPLATE_BASE64.', 'error');
+        if (!cleanB64) {
+            showStatus('❌ Template not loaded. Paste the Base64 string in the script where indicated.', 'error');
             return;
         }
-        if (cleanB64.length % 4 !== 0) {
-            showStatus('❌ Template Base64 is corrupt (length not a multiple of 4).', 'error');
-            return;
-        }
-
         showStatus('Loading template…', 'info'); updateProgress(10);
-
-        let templateBin;
-        try {
-            templateBin = Uint8Array.from(atob(cleanB64), c => c.charCodeAt(0));
-        } catch (decodeErr) {
-            showStatus('❌ Base64 decode failed: ' + decodeErr.message, 'error');
-            return;
-        }
-
-        let workbook;
-        try {
-            workbook = XLSX.read(templateBin, { type: 'array', cellStyles: true });
-        } catch (xlsxErr) {
-            showStatus('❌ Template XLSX corrupt: ' + xlsxErr.message, 'error');
-            return;
-        }
-
+        const templateBin = Uint8Array.from(atob(cleanB64), c => c.charCodeAt(0));
+        const workbook = XLSX.read(templateBin, { type:'array', cellStyles:true });
         updateProgress(30);
-        if (selectedFormat === 'tallyExcel') {
-            await processTallyExcel(workbook);
-        } else {
-            await processCSVFiles(workbook);
-        }
-
+        if (selectedFormat === 'tallyExcel') { await processTallyExcel(workbook); }
+        else { await processCSVFiles(workbook); }
         showStatus('Generating Excel…', 'info'); updateProgress(90);
-        const out = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', cellStyles: true });
-        const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const out = XLSX.write(workbook, { bookType:'xlsx', type:'array', cellStyles:true });
+        const blob = new Blob([out], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
         saveAs(blob, `GSTR1_${selectedFormat}_${ts}.xlsx`);
-        updateProgress(100);
-        showStatus('✅ Success! File downloaded.', 'success');
+        updateProgress(100); showStatus('✅ Success! File downloaded.', 'success');
         setTimeout(hideProgress, 2000);
-    } catch (err) {
-        console.error(err);
-        showStatus('❌ Error: ' + err.message, 'error');
-        hideProgress();
-    }
+    } catch(err) { console.error(err); showStatus('❌ Error: '+err.message, 'error'); hideProgress(); }
 }
 
-// ================================================================
-// TALLY EXCEL PROCESSOR
-// ================================================================
 async function processTallyExcel(destWorkbook) {
     const xlsxKey = Object.keys(csvFiles).find(k => k.endsWith('.XLSX'));
     if (!xlsxKey) throw new Error('No .xlsx file found. Please upload the Tally Excel file.');
     showStatus('Reading Tally Excel…', 'info');
     const arrBuf = await readFileAsArrayBuffer(csvFiles[xlsxKey]);
-    const srcWb = XLSX.read(arrBuf, { type: 'array', cellDates: true });
-    let processed = 0;
-    const total = srcWb.SheetNames.length;
+    const srcWb = XLSX.read(arrBuf, { type:'array', cellDates:true });
+    let processed = 0; const total = srcWb.SheetNames.length;
     for (const srcSheetName of srcWb.SheetNames) {
         const lc = srcSheetName.toLowerCase().trim();
         const destSheetName = TALLY_SHEET_MAP[lc];
         if (!destSheetName) { processed++; continue; }
         const srcSheet = srcWb.Sheets[srcSheetName];
-        const rows = XLSX.utils.sheet_to_json(srcSheet, { header: 1, defval: '' });
+        const rows = XLSX.utils.sheet_to_json(srcSheet, { header:1, defval:'' });
         if (rows.length < 5) { processed++; continue; }
-        const headers = rows[3].map(h => h != null ? h.toString().trim() : '');
-        const dataRows = rows.slice(4).filter(r => r.some(c => c !== '' && c !== null && c !== undefined));
+        const headers = rows[3].map(h => h!=null?h.toString().trim():'');
+        const dataRows = rows.slice(4).filter(r => r.some(c => c!==''&&c!==null&&c!==undefined));
         if (dataRows.length === 0) { processed++; continue; }
-        let data = dataRows.map(r => {
-            const obj = {};
-            headers.forEach((h, i) => { obj[h] = r[i] !== undefined ? r[i] : ''; });
-            return obj;
-        });
-        if (lc === 'hsn(b2b)') data = data.map(d => ({ Type: 'B2B', ...d }));
-        else if (lc === 'hsn(b2c)') data = data.map(d => ({ Type: 'B2C', ...d }));
-        if (lc === 'exemp') data = data.map(row => { const f = {}; for (const [k, v] of Object.entries(row)) f[k.trimEnd()] = v; return f; });
+        let data = dataRows.map(r => { const obj={}; headers.forEach((h,i)=>{ obj[h]=r[i]!==undefined?r[i]:''; }); return obj; });
+        if (lc==='hsn(b2b)') data=data.map(d=>({Type:'B2B',...d}));
+        else if (lc==='hsn(b2c)') data=data.map(d=>({Type:'B2C',...d}));
+        if (lc==='exemp') data=data.map(row=>{ const f={}; for(const[k,v] of Object.entries(row)) f[k.trimEnd()]=v; return f; });
         data = data.map(row => normaliseDates(row));
         const destSheet = destWorkbook.Sheets[destSheetName];
         if (!destSheet) { processed++; continue; }
         const mapping = columnMappingsStandard[destSheetName] || {};
-        if (destSheetName === 'Nil_exempt_NonGST') updateExemptSheet(destSheet, data, mapping);
+        if (destSheetName==='Nil_exempt_NonGST') updateExemptSheet(destSheet, data, mapping);
         else appendDataToSheetWithMapping(destSheet, data, mapping, destSheetName);
-        processed++;
-        updateProgress(30 + (processed / total) * 55);
+        processed++; updateProgress(30+(processed/total)*55);
     }
 }
 
 function normaliseDates(row) {
     const result = {};
-    for (const [k, v] of Object.entries(row)) {
-        if (v instanceof Date) {
-            const d = v.getDate().toString().padStart(2, '0');
-            const m = (v.getMonth() + 1).toString().padStart(2, '0');
-            result[k] = `${d}-${m}-${v.getFullYear()}`;
-        } else {
-            result[k] = v;
-        }
+    for (const [k,v] of Object.entries(row)) {
+        if (v instanceof Date) { const d=v.getDate().toString().padStart(2,'0'); const m=(v.getMonth()+1).toString().padStart(2,'0'); result[k]=`${d}-${m}-${v.getFullYear()}`; }
+        else result[k]=v;
     }
     return result;
 }
+function readFileAsArrayBuffer(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsArrayBuffer(file); }); }
 
-function readFileAsArrayBuffer(file) {
-    return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = e => res(e.target.result);
-        r.onerror = rej;
-        r.readAsArrayBuffer(file);
-    });
-}
-
-// ================================================================
-// CSV FILES PROCESSOR
-// ================================================================
 async function processCSVFiles(workbook) {
-    let processed = 0;
-    const total = Object.keys(csvFiles).length;
-    for (const [fileName, file] of Object.entries(csvFiles)) {
+    let processed=0; const total=Object.keys(csvFiles).length;
+    for (const [fileName,file] of Object.entries(csvFiles)) {
         const sheetName = getSheetNameFromFile(fileName);
         if (!sheetName) { processed++; continue; }
         const csvText = await readFileAsText(file);
         let csvData = parseCSV(csvText);
-        if (csvData.length === 0) { processed++; continue; }
-        if (fileName.includes('DOC'))  csvData = processDocsIssued(csvData);
-        else if (fileName.includes('HSN')) csvData = processHSNData(csvData, fileName);
-        else csvData = csvData.map(r => trimAllFields(r));
+        if (csvData.length===0) { processed++; continue; }
+        if (fileName.includes('DOC')) csvData=processDocsIssued(csvData);
+        else if (fileName.includes('HSN')) csvData=processHSNData(csvData,fileName);
+        else csvData=csvData.map(r=>trimAllFields(r));
         const sheet = workbook.Sheets[sheetName];
         if (!sheet) { processed++; continue; }
         const mapping = columnMappingsStandard[sheetName] || {};
-        if (sheetName === 'Nil_exempt_NonGST') updateExemptSheet(sheet, csvData, mapping);
-        else appendDataToSheetWithMapping(sheet, csvData, mapping, sheetName);
-        processed++;
-        updateProgress(30 + (processed / total) * 55);
+        if (sheetName==='Nil_exempt_NonGST') updateExemptSheet(sheet,csvData,mapping);
+        else appendDataToSheetWithMapping(sheet,csvData,mapping,sheetName);
+        processed++; updateProgress(30+(processed/total)*55);
     }
 }
 
 function getSheetNameFromFile(fileName) {
-    const u = fileName.toUpperCase();
-    if (u.includes('HSNB2B') || (u.includes('HSN') && u.includes('B2B'))) return 'hsn';
-    if (u.includes('HSNB2C') || (u.includes('HSN') && u.includes('B2C'))) return 'hsn';
-    if (u.includes('HSN'))    return 'hsn';
-    if (u.includes('ATADJ')) return 'adv_tax_adjusted';
-    if (u.includes('AT') && !u.includes('ATADJ')) return 'adv_tax';
-    if (u.includes('CDNUR')) return 'cdnur';
-    if (u.includes('CDNR') && !u.includes('CDNUR')) return 'cdnr';
-    if (u.includes('B2CL'))  return 'b2cl';
-    if (u.includes('B2CS'))  return 'b2cs';
-    if (u.includes('B2B'))   return 'b2b';
-    if (u.includes('EXP'))   return 'export';
-    if (u.includes('EXEMP')) return 'Nil_exempt_NonGST';
-    if (u.includes('DOC'))   return 'Docs_issued';
+    const u=fileName.toUpperCase();
+    if (u.includes('HSN'))  return 'hsn';
+    if (u.includes('B2B'))  return 'b2b';
+    if (u.includes('B2CL')) return 'b2cl';
+    if (u.includes('B2CS')) return 'b2cs';
+    if (u.includes('EXP'))  return 'export';
+    if (u.includes('EXEMP'))return 'Nil_exempt_NonGST';
+    if (u.includes('CDNR')&&!u.includes('CDNUR')) return 'cdnr';
+    if (u.includes('CDNUR'))return 'cdnur';
+    if (u.includes('ATADJ'))return 'adv_tax_adjusted';
+    if (u.includes('AT')&&!u.includes('ATADJ')) return 'adv_tax';
+    if (u.includes('DOC'))  return 'Docs_issued';
     return null;
 }
 
-// ================================================================
-// VALUE TRANSFORMERS
-// ================================================================
-function cleanPlaceOfSupply(v) {
-    return v ? v.toString().trim().replace(/^\d+[-–]\s*/, '').trim() : '';
-}
-
-function trimAllFields(obj) {
-    const r = {};
-    for (const [k, v] of Object.entries(obj)) r[k] = typeof v === 'string' ? v.trim() : v;
-    return r;
-}
-
-function formatDateValue(raw) {
-    if (!raw) return raw;
-    const s = raw.toString().trim();
-    // DD-Mon-YY or DD-Mon-YYYY  e.g. 01-Mar-26 or 01-Mar-2026
-    const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
-    if (m) {
-        const months = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
-        const day = m[1].padStart(2, '0');
-        const mon = (months[m[2]] || 0).toString().padStart(2, '0');
-        const yr  = m[3].length === 2 ? '20' + m[3] : m[3];
-        return `${day}-${mon}-${yr}`;
-    }
-    // Already DD-MM-YYYY
-    if (/^\d{2}-\d{2}-\d{4}$/.test(s)) return s;
-    return s;
-}
-
-function transformCellValue(templateHeader, rawValue) {
-    let v = rawValue;
-    const th = templateHeader.toLowerCase().trim();
-
-    // Date columns
-    if (th.includes('date')) v = formatDateValue(v);
-
-    // Place of Supply — strip state code prefix
-    if (th.includes('place of supply')) v = cleanPlaceOfSupply(v);
-
-    // Invoice Type — strip B2B/B2C suffixes added by some exporters
-    if (th === 'invoice type') v = v.toString().replace(/ B2B| B2C/gi, '').trim();
-
-    // RCM — normalise Y/N to Yes/No
-    if (th === 'rcm applicable' || th === 'rcm') {
-        if (v === 'Y') v = 'Yes';
-        else if (v === 'N') v = 'No';
-    }
-
-    // Rate — default empty to 0
-    if ((th === 'rate' || th === 'gst%') && (v === '' || v === undefined || v === null)) v = 0;
-
-    return v;
-}
-
+function cleanPlaceOfSupply(v) { return v?v.toString().trim().replace(/^\d+-\s*/,'').trim():''; }
+function trimAllFields(obj) { const r={}; for(const[k,v] of Object.entries(obj)) r[k]=typeof v==='string'?v.trim():v; return r; }
 function processDocsIssued(data) {
-    return data.map(row => {
-        const c = trimAllFields(row);
-        const csvHeaders = Object.keys(c);
-        const get = key => {
-            const r = resolveCsvHeader(csvHeaders, key);
-            return r ? c[r] : '';
-        };
-        const total     = parseFloat(get('Total Number')) || 0;
-        const cancelled = parseFloat(get('Cancelled'))    || 0;
-        return {
-            'Nature of Document': get('Nature of Document') || get('Type of Document') || '',
-            'Sr.No.From':         get('Sr.No.From')  || get('Sr. No. From')  || get('Series From') || '',
-            'Sr.No.To':           get('Sr.No.To')    || get('Sr. No. To')    || get('Series To')   || '',
-            'Total Number':       total,
-            'Cancelled':          cancelled,
-            'Net Issued':         total - cancelled
-        };
+    return data.map(row=>{
+        const c=trimAllFields(row); const total=parseFloat(c['Total Number'])||0; const cancelled=parseFloat(c['Cancelled'])||0;
+        return {'Nature of Document':c['Nature of Document']||c['Type of Document']||'','Sr.No.From':c['Sr.No.From']||c['Sr. No. From']||c['Series From']||'','Sr.No.To':c['Sr.No.To']||c['Sr. No. To']||c['Series To']||'','Total Number':total,'Cancelled':cancelled,'Net Issued':total-cancelled};
     });
 }
-
-function processHSNData(data, fileName) {
-    const isB2B = fileName.toUpperCase().includes('B2B');
-    const isB2C = fileName.toUpperCase().includes('B2C');
-    return data.map(row => {
-        const c = trimAllFields(row);
-        if (isB2B) c['Type'] = 'B2B';
-        else if (isB2C) c['Type'] = 'B2C';
-        if (!c['Rate'] || c['Rate'] === '') c['Rate'] = 0;
-        return c;
-    });
+function processHSNData(data,fileName) {
+    const isB2B=fileName.toUpperCase().includes('B2B'); const isB2C=fileName.toUpperCase().includes('B2C');
+    return data.map(row=>{ const c=trimAllFields(row); if(isB2B) c['Type']='B2B'; else if(isB2C) c['Type']='B2C'; if(!c['Rate']||c['Rate']==='') c['Rate']=0; return c; });
 }
-
-function readFileAsText(file) {
-    return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = e => res(e.target.result);
-        r.onerror = rej;
-        r.readAsText(file);
-    });
-}
-
+function readFileAsText(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsText(file); }); }
 function parseCSV(text) {
-    const lines = text.trim().split(/\r?\n/);
-    if (lines.length <= 1) return [];
-    function parseLine(line) {
-        const result = []; let current = ''; let inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (ch === '"') { inQuotes = !inQuotes; }
-            else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
-            else { current += ch; }
-        }
-        result.push(current.trim());
-        return result;
-    }
-    const headers = parseLine(lines[0]);
-    return lines.slice(1).filter(l => l.trim()).map(l => {
-        const vals = parseLine(l);
-        const row = {};
-        headers.forEach((h, i) => { row[h] = vals[i] || ''; });
-        return row;
-    });
+    const lines=text.trim().split(/\r?\n/); if(lines.length<=1) return [];
+    function parseLine(line) { const result=[]; let current=''; let inQuotes=false; for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){inQuotes=!inQuotes;}else if(ch===','&&!inQuotes){result.push(current.trim());current='';}else{current+=ch;}}result.push(current.trim());return result; }
+    const headers=parseLine(lines[0]);
+    return lines.slice(1).filter(l=>l.trim()).map(l=>{ const vals=parseLine(l); const row={}; headers.forEach((h,i)=>{row[h]=vals[i]||'';}); return row; });
 }
 
-// ================================================================
-// SHEET WRITERS
-// ================================================================
-function getTemplateHeaders(sheet) {
-    const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
-    const headers = [];
-    for (let col = range.s.c; col <= range.e.c; col++) {
-        const cell = sheet[XLSX.utils.encode_cell({ r: 0, c: col })];
-        headers.push(cell && cell.v != null ? cell.v.toString().trim() : '');
-    }
-    return { headers, range };
-}
-
-function writeCell(sheet, rowNum, colIndex, rawValue) {
-    const cellAddr = XLSX.utils.encode_cell({ r: rowNum, c: colIndex });
-    if (rawValue === '' || rawValue === undefined || rawValue === null) {
-        sheet[cellAddr] = { t: 's', v: '' };
-        return;
-    }
-    const str = rawValue.toString().trim();
-    const num = parseFloat(str.replace(/,/g, ''));
-    if (!isNaN(num) && /^-?\d+\.?\d*$/.test(str)) {
-        sheet[cellAddr] = { t: 'n', v: num };
-    } else {
-        sheet[cellAddr] = { t: 's', v: str };
-    }
-}
-
-// For Nil/Exempt sheet — matches rows by Description and fills in-place
 function updateExemptSheet(sheet, data, columnMapping) {
     if (!data.length) return;
-    const { headers: templateHeaders, range } = getTemplateHeaders(sheet);
-
-    data.forEach(csvRow => {
-        const csvHeaders = Object.keys(csvRow);
-        const descKey   = resolveCsvHeader(csvHeaders, 'Description');
-        const csvDesc   = descKey ? (csvRow[descKey] || '').toString().trim() : '';
-
-        for (let row = 1; row <= range.e.r; row++) {
-            const descCell = sheet[XLSX.utils.encode_cell({ r: row, c: 0 })];
-            const templateDesc = descCell && descCell.v ? descCell.v.toString().trim() : '';
-            if (templateDesc.toLowerCase() !== csvDesc.toLowerCase()) continue;
-
-            templateHeaders.forEach((templateHeader, colIndex) => {
-                if (!templateHeader || colIndex === 0) return;
-                let rawValue = resolveValue(csvRow, templateHeader, columnMapping);
-                rawValue = transformCellValue(templateHeader, rawValue);
-                writeCell(sheet, row, colIndex, rawValue);
-            });
-            break;
-        }
-    });
-}
-
-// For all other sheets — appends rows after last used row
-function appendDataToSheetWithMapping(sheet, data, columnMapping, sheetName) {
-    if (!data.length) return;
-    const { headers: templateHeaders, range } = getTemplateHeaders(sheet);
-
-    // Find last row that has any data
-    let lastRowWithData = 0;
-    for (let row = 1; row <= range.e.r; row++) {
-        for (let col = range.s.c; col <= range.e.c; col++) {
-            const cell = sheet[XLSX.utils.encode_cell({ r: row, c: col })];
-            if (cell && cell.v !== undefined && cell.v !== null && cell.v !== '') {
-                lastRowWithData = row;
+    const range=XLSX.utils.decode_range(sheet['!ref']||'A1');
+    const templateHeaders=[];
+    for(let col=range.s.c;col<=range.e.c;col++){const cell=sheet[XLSX.utils.encode_cell({r:0,c:col})];templateHeaders.push(cell&&cell.v?cell.v.toString().trim():'');}
+    data.forEach(csvRow=>{
+        const csvDesc=(csvRow['Description']||'').toString().trim();
+        for(let row=1;row<=range.e.r;row++){
+            const descCell=sheet[XLSX.utils.encode_cell({r:row,c:0})];
+            const templateDesc=descCell&&descCell.v?descCell.v.toString().trim():'';
+            if(templateDesc===csvDesc){
+                templateHeaders.forEach((templateHeader,colIndex)=>{
+                    if(!templateHeader||colIndex===0) return;
+                    let csvValue='';
+                    if(csvRow[templateHeader]!==undefined) csvValue=csvRow[templateHeader];
+                    else { for(const[csvCol,excelCol] of Object.entries(columnMapping)){const cols=Array.isArray(excelCol)?excelCol:[excelCol];if(cols.includes(templateHeader)&&csvRow[csvCol]!==undefined){csvValue=csvRow[csvCol];break;}} }
+                    const cellAddr=XLSX.utils.encode_cell({r:row,c:colIndex});
+                    if(!csvValue&&csvValue!==0){sheet[cellAddr]={t:'n',v:0};return;}
+                    const num=parseFloat(csvValue.toString().replace(/,/g,''));
+                    if(!isNaN(num)) sheet[cellAddr]={t:'n',v:num}; else sheet[cellAddr]={t:'s',v:csvValue.toString().trim()};
+                });
                 break;
             }
         }
-    }
-
-    const startRow = lastRowWithData > 0 ? lastRowWithData + 1 : 1;
-
-    data.forEach((csvRow, rowIndex) => {
-        const excelRowNum = startRow + rowIndex;
-        templateHeaders.forEach((templateHeader, colIndex) => {
-            if (!templateHeader) return;
-            let rawValue = resolveValue(csvRow, templateHeader, columnMapping);
-            rawValue = transformCellValue(templateHeader, rawValue);
-            writeCell(sheet, excelRowNum, colIndex, rawValue);
-        });
     });
-
-    range.e.r = startRow + data.length - 1;
-    sheet['!ref'] = XLSX.utils.encode_range(range);
 }
 
+function appendDataToSheetWithMapping(sheet, data, columnMapping, sheetName) {
+    if (!data.length) return;
+    const range=XLSX.utils.decode_range(sheet['!ref']||'A1');
+    const templateHeaders=[];
+    for(let col=range.s.c;col<=range.e.c;col++){const cell=sheet[XLSX.utils.encode_cell({r:0,c:col})];templateHeaders.push(cell&&cell.v?cell.v.toString().trim():'');}
+    let lastRowWithData=0;
+    for(let row=1;row<=range.e.r;row++){for(let col=range.s.c;col<=range.e.c;col++){const cell=sheet[XLSX.utils.encode_cell({r:row,c:col})];if(cell&&cell.v!==undefined&&cell.v!==null&&cell.v!==''){lastRowWithData=row;break;}}}
+    const startRow=lastRowWithData>0?lastRowWithData+1:1;
+    data.forEach((csvRow,rowIndex)=>{
+        const excelRowNum=startRow+rowIndex;
+        templateHeaders.forEach((templateHeader,colIndex)=>{
+            if(!templateHeader) return;
+            let csvValue='';
+            if(csvRow[templateHeader]!==undefined) csvValue=csvRow[templateHeader];
+            else{for(const[csvCol,excelCol] of Object.entries(columnMapping)){const cols=Array.isArray(excelCol)?excelCol:[excelCol];if(cols.includes(templateHeader)&&csvRow[csvCol]!==undefined){csvValue=csvRow[csvCol];break;}}}
+            const cellAddr=XLSX.utils.encode_cell({r:excelRowNum,c:colIndex});
+            if(!csvValue&&csvValue!==0){sheet[cellAddr]={t:'s',v:''};return;}
+            let finalValue=csvValue;
+            if(templateHeader.toLowerCase().includes('place of supply')) finalValue=cleanPlaceOfSupply(csvValue);
+            if(templateHeader==='Invoice Type') finalValue=csvValue.toString().replace(' B2B','').replace(' B2C','').trim();
+            if(templateHeader==='RCM Applicable'||templateHeader==='RCM') finalValue=csvValue==='Y'?'Yes':csvValue==='N'?'No':csvValue;
+            if((templateHeader==='Rate'||templateHeader==='GST%')&&(!csvValue||csvValue==='')) finalValue=0;
+            if(templateHeader.toLowerCase().includes('date')){const dm=csvValue.toString().match(/(\d{1,2})-([A-Za-z]{3})-(\d{2,4})/);if(dm){const months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const day=dm[1].padStart(2,'0');const mon=(months[dm[2]]+1).toString().padStart(2,'0');const yr=dm[3].length===2?'20'+dm[3]:dm[3];finalValue=`${day}-${mon}-${yr}`;}}
+            const num=parseFloat(finalValue.toString().replace(/,/g,''));
+            if(!isNaN(num)&&finalValue.toString().match(/^-?\d+\.?\d*$/)) sheet[cellAddr]={t:'n',v:num};
+            else sheet[cellAddr]={t:'s',v:finalValue.toString().trim()};
+        });
+    });
+    range.e.r=startRow+data.length-1;
+    sheet['!ref']=XLSX.utils.encode_range(range);
+}
 </script>
 </body>
 </html>
