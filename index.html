@@ -225,6 +225,7 @@ async function mergeFiles() {
     const workbook = XLSX.read(Uint8Array.from(atob(b64), c => c.charCodeAt(0)), {type:'array', cellStyles:true});
     updateProgress(30);
     const log = [];
+    loadMaster(workbook);
     if (selectedFormat === 'tallyExcel') await processTallyExcel(workbook, log);
     else await processCSVFiles(workbook, log);
     showStatus('Generating Excel…','info'); updateProgress(90); await _yield();
@@ -482,14 +483,39 @@ function formatDate(raw) {
   m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/); if (m) return `${m[3].padStart(2,'0')}-${m[2].padStart(2,'0')}-${m[1]}`;
   return s;
 }
+// ---- Speqta Master lists (read from the template's Master sheet) so values match its dropdowns exactly ----
+let MASTER = {pos:[], uqc:[], inv:[]};
+function loadMaster(wb) {
+  MASTER = {pos:[], uqc:[], inv:[]};
+  const ws = wb.Sheets['Master']; if (!ws) return;
+  const {headers, range} = getTemplateHeadersRaw(ws);
+  const col = n => headers.findIndex(h => h.trim().toLowerCase() === n);
+  const read = c => { const out = []; if (c < 0) return out; for (let r = 1; r <= range.e.r; r++) { const x = ws[XLSX.utils.encode_cell({r,c})]; if (x && x.v !== undefined && x.v !== '') out.push(x.v.toString().trim()); } return out; };
+  MASTER.pos = read(col('pos')); MASTER.uqc = read(col('uqc')); MASTER.inv = read(col('invoice type'));
+}
+const _norm = s => s.toString().toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').trim();
+function matchPOS(v) {
+  if (!v) return '';
+  const n = _norm(v), hit = MASTER.pos.find(p => _norm(p) === n);
+  return hit || v.toString().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+function matchUQC(v) {
+  const s = (v === undefined || v === null) ? '' : v.toString().trim(); if (!s) return '';
+  const up = s.toUpperCase(), code = up.split('-')[0].trim(), n = _norm(s);
+  return MASTER.uqc.find(u => u.toUpperCase() === up) || MASTER.uqc.find(u => u.split('-')[0].toUpperCase() === code) || MASTER.uqc.find(u => _norm(u.split('-').slice(1).join('-')) === n) || s;
+}
+function matchInv(v) { const n = _norm(v); return MASTER.inv.find(i => _norm(i) === n) || v; }
 function transformValue(hdr, raw) {
   let v = (raw === undefined || raw === null) ? '' : raw;
   const th = hdr.trim().toLowerCase();
   if (th.includes('date')) v = formatDate(v);
-  if (th.includes('place of supply')) v = v ? v.toString().trim().replace(/^\d+[-–]\s*/,'').trim() : '';
-  if (th === 'invoice type') v = v.toString().replace(/\s*(b2b|b2c)\s*/gi,'').trim();
+  if (th.includes('place of supply')) v = matchPOS(v ? v.toString().trim().replace(/^\d+[-–]\s*/,'').trim() : '');
+  if (th === 'invoice type') v = matchInv(v.toString().replace(/\s*(b2b|b2c)\s*/gi,'').trim());
+  if (th === 'uqc') v = matchUQC(v);
   if (th === 'rcm applicable' || th === 'rcm') { if (v === 'Y') v = 'Yes'; else if (v === 'N') v = 'No'; }
   if ((th === 'rate' || th === 'gst%') && v === '') v = 0;
+  // document numbers are written as TEXT so 'INV-106' / '0113' stay exactly as issued
+  if (/^(invoice no|dr\.\/ ?cr\. (note )?no\.?|series (from|to)|shipping bill\/ bill of export no)$/.test(th) && v !== '') v = new String(v.toString().trim());
   return v;
 }
 function processDocsIssued(data) {
@@ -523,6 +549,7 @@ function getTemplateHeadersRaw(sheet) {
 }
 function writeCell(sheet, r, c, value) {
   const addr = XLSX.utils.encode_cell({r,c});
+  if (value instanceof String) { sheet[addr] = {t:'s', v:value.toString()}; return; }
   if (value === '' || value === undefined || value === null) { sheet[addr] = {t:'s', v:''}; return; }
   const s = value.toString().trim();
   if (/^-?\d+\.?\d*$/.test(s)) { const n = parseFloat(s); if (!isNaN(n)) { sheet[addr] = {t:'n', v:n}; return; } }
