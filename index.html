@@ -392,17 +392,18 @@ async function loadTallyXlsx(wb, log) {
   if (!keys.length) throw new Error('No .xlsx file found.');
   for (const key of keys) {
     showStatus('Reading ' + key + '…','info'); await _yield();
-    const src = XLSX.read(await readAB(csvFiles[key]), {type:'array', cellDates:true});
+    const src = XLSX.read(await readAB(csvFiles[key]), {type:'array'}); // no cellDates: JS Date conversion shifts dates back one day in some time zones (e.g. India)
     for (const name of src.SheetNames) {
       const lc = name.toLowerCase().trim(), dest = TALLY_SHEET_MAP[lc], ds = dest && wb.Sheets[dest];
       if (!ds) continue;
       const rows = XLSX.utils.sheet_to_json(src.Sheets[name], {header:1, defval:''});
-      const hi = rows.findIndex((r,i) => i < 10 && r.filter(c => c !== '' && c != null).length >= 3); // auto header row
+      const hi = findHeaderRow(rows); // auto header row (skips Tally summary lines)
+      if (hi < 0) continue;
       if (hi < 0) continue;
       const headers = rows[hi].map(h => h != null ? h.toString().trim() : '');
       const body = rows.slice(hi+1).filter(r => r.some(c => c !== '' && c != null));
       if (!body.length) continue;
-      let data = body.map(r => { const o = {}; headers.forEach((h,i) => { if (h) o[h] = r[i] !== undefined ? r[i] : ''; }); return normaliseDates(o); });
+      let data = body.map(r => { const o = {}; headers.forEach((h,i) => { if (h) o[h] = r[i] !== undefined ? r[i] : ''; }); return fixSerialDates(o); });
       if (lc === 'hsn(b2b)') data = data.map(d => ({...d, Type:'B2B'}));
       else if (lc === 'hsn(b2c)') data = data.map(d => ({...d, Type:'B2C'}));
       else if (lc === 'hsn') data = data.map(d => ({...d, Type: d.Type || 'B2B'}));
@@ -458,6 +459,17 @@ function getSheetInfo(fileName) {
 // ---------------- TRANSFORMS ----------------
 function trimAll(o){ const r={}; for (const [k,v] of Object.entries(o)) r[k] = typeof v === 'string' ? v.trim() : v; return r; }
 function fmtDateObj(v){ return `${String(v.getDate()).padStart(2,'0')}-${String(v.getMonth()+1).padStart(2,'0')}-${v.getFullYear()}`; }
+// Excel date serial -> DD-MM-YYYY using UTC parts only, so the time zone can never move the day
+function serialToDMY(n){ const d = new Date(Math.floor(n - 25569) * 86400000); return `${String(d.getUTCDate()).padStart(2,'0')}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${d.getUTCFullYear()}`; }
+function fixSerialDates(row){ const r = {}; for (const [k,v] of Object.entries(row)) r[k] = (typeof v === 'number' && /date/i.test(k) && v > 20000 && v < 80000) ? serialToDMY(v) : v; return normaliseDates(r); }
+// Header row = the row (within first 10) with most known column names; falls back to first row with 3+ filled cells
+function findHeaderRow(rows){
+  const known = new Set(); Object.values(columnMappings).forEach(m => Object.keys(m).forEach(k => known.add(k.trim().toLowerCase())));
+  let best = -1, bestScore = 0;
+  rows.slice(0, 10).forEach((r,i) => { const s = r.filter(c => typeof c === 'string' && known.has(c.trim().toLowerCase())).length; if (s > bestScore) { bestScore = s; best = i; } });
+  if (best >= 0) return best;
+  return rows.findIndex((r,i) => i < 10 && r.filter(c => c !== '' && c != null).length >= 3);
+}
 function normaliseDates(row){ const r={}; for (const [k,v] of Object.entries(row)) r[k] = v instanceof Date ? fmtDateObj(v) : v; return r; }
 function formatDate(raw) {
   if (raw instanceof Date) return fmtDateObj(raw);
